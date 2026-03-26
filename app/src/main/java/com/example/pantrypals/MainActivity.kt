@@ -54,7 +54,7 @@ fun GeminiSimpleScreen() {
             //model we want to use
             modelName = "gemini-3.1-flash-lite-preview",
             //api key
-            apiKey = "AIzaSyBCQ1pI_HNvAr9CPNY1bIW7QTDpeVev0AM"
+            apiKey = "Insert here"
         )
     }
 
