@@ -85,7 +85,7 @@ fun AppNavigation() {
             //model we want to use
             modelName = "gemini-3.1-flash-lite-preview",
             //api key
-            apiKey = "insert here"
+            apiKey = "Insert here"
         )
     }
     NavHost(navController = navController, startDestination = "prompt") {
