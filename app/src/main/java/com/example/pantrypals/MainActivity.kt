@@ -116,6 +116,7 @@ class MainActivity : ComponentActivity() {
                                 )
                             }
                         }
+
                     ) {
                         // This is the main screen content
                         Scaffold(
