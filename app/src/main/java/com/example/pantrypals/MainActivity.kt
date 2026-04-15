@@ -145,6 +145,8 @@ fun exportToPdf(context: Context, text: String) {
         y += paint.descent() - paint.ascent()
     }
 
+
+
     pdfDocument.finishPage(page)
 
     // Save the file to the Downloads folder
