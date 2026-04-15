@@ -59,4 +59,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("com.google.ai.client.generativeai:generativeai:0.9.0")
+//    added for nav
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+
 }

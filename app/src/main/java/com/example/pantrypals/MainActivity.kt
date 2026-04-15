@@ -29,82 +29,165 @@ import com.example.pantrypals.ui.theme.PantryPalsTheme
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.SelectInstance
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.unit.dp
+//import androidx.navigation.NavBackStackEntry
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.launch
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+
+
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             PantryPalsTheme() {
-                GeminiSimpleScreen()
+                    val navController = rememberNavController()
+                    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                    val scope = rememberCoroutineScope()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
+
+                    ModalNavigationDrawer(
+                        drawerState = drawerState,
+                        drawerContent = {
+                            ModalDrawerSheet {
+                                Text("Menu", modifier = Modifier.padding(16.dp))
+                                HorizontalDivider()
+
+                                NavigationDrawerItem(
+                                    label = { Text("Home") },
+                                    selected = currentRoute == Screen.Home.route,
+                                    onClick = {
+                                        navController.navigate(Screen.Home.route)
+                                        scope.launch { drawerState.close() }
+                                    }
+                                )
+                                NavigationDrawerItem(
+                                    label = { Text("Profile") },
+                                    selected = currentRoute == Screen.Home.route,
+                                    onClick = {
+                                        navController.navigate(Screen.Profile.route)
+                                        scope.launch { drawerState.close() }
+                                    }
+                                )
+                                NavigationDrawerItem(
+                                    label = { Text("Preferences") },
+                                    selected = currentRoute == Screen.Home.route,
+                                    onClick = {
+                                        navController.navigate(Screen.Preferences.route)
+                                        scope.launch { drawerState.close() }
+                                    }
+                                )
+                                NavigationDrawerItem(
+                                    label = { Text("Saved Meals") },
+                                    selected = currentRoute == Screen.Home.route,
+                                    onClick = {
+                                        navController.navigate(Screen.SavedMeals.route)
+                                        scope.launch { drawerState.close() }
+                                    }
+                                )
+                            }
+                        }
+                    ) {
+                        // This is the main screen content
+                        Scaffold(
+                            topBar = {
+                                CenterAlignedTopAppBar(
+                                    title = { Text("PantryPals") },
+                                    navigationIcon = {
+                                        IconButton(onClick = {
+                                            scope.launch { drawerState.open() }
+                                        }) {
+                                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                                        }
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            // The actual NavHost that switches your fragments/screens
+                            NavHost(
+                                navController = navController,
+                                startDestination = Screen.Home.route,
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                composable(Screen.Home.route) {
+                                    HomeScreen(modifier = Modifier.padding(innerPadding))
+                                }
+                                composable(Screen.Profile.route) {
+                                    ProfileScreen()
+                                }
+                                composable(Screen.Preferences.route) {
+                                    PreferencesScreen()
+                                }
+                                composable(Screen.SavedMeals.route) {
+                                    SavedMealsScreen()
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+
+
+// NAVBAR ITEMS: Home, profile, preferences, saved meals
+
+sealed class Screen(val route: String) {
+    object Home : Screen("home")
+    object Profile : Screen("profile")
+    object Preferences : Screen("preferences")
+    object SavedMeals : Screen("saved_meals")
+}
+
+@Composable
+fun HomeScreen(modifier: Modifier) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Welcome to the Home Screen!", style = MaterialTheme.typography.headlineMedium)
+        // Add your main content here
     }
 }
 
 @Composable
-fun GeminiSimpleScreen() {
-    var responseText by remember { mutableStateOf("Ready to ask Gemini") }
-    var isLoading by remember { mutableStateOf(false) }
+fun ProfileScreen() {
+    Text("User Profile Information")
+}
 
-    val coroutineScope = rememberCoroutineScope()
+@Composable
+fun SavedMealsScreen() {
+    Text("Your Favorite Recipes")
+}
 
-    val generativeModel = remember{
-        GenerativeModel(
-            //model we want to use
-            modelName = "gemini-3.1-flash-lite-preview",
-            //api key
-            apiKey = "AIzaSyBCQ1pI_HNvAr9CPNY1bIW7QTDpeVev0AM"
-        )
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box(
-            modifier = Modifier.weight(.8f)
-                .weight(.5f)
-                .fillMaxWidth(),
-            contentAlignment =  Alignment.Center
-        ) {
-            Button(
-                onClick = {
-                    coroutineScope.launch {
-                        isLoading = true
-                        responseText = "Thinking..."
-
-                        try{
-                            val prompt = "Tell me a funny joke"
-                            val response = generativeModel.generateContent(prompt)
-
-                            responseText = response.text ?: "No response generated."
-
-                        } catch (e: Exception){
-                            responseText = "Error: ${e.localizedMessage}"
-                        } finally {
-                            isLoading = false
-                        }
-                    }
-                },
-                enabled = !isLoading
-            ) {
-                Text("Send prompt")
-            }
-        }
-        Box(
-            modifier = Modifier.weight(.8f)
-                .weight(.5f)
-                .fillMaxWidth(),
-            contentAlignment =  Alignment.Center
-        ) {
-            Text(
-                text = responseText,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-    }
+@Composable
+fun PreferencesScreen() {
+    Text("Your preferences")
 }
