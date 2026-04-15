@@ -60,6 +60,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 
 
 
+//fix highlights
+
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,7 +92,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 NavigationDrawerItem(
                                     label = { Text("Profile") },
-                                    selected = currentRoute == Screen.Home.route,
+                                    selected = currentRoute == Screen.Profile.route,
                                     onClick = {
                                         navController.navigate(Screen.Profile.route)
                                         scope.launch { drawerState.close() }
@@ -98,7 +100,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 NavigationDrawerItem(
                                     label = { Text("Preferences") },
-                                    selected = currentRoute == Screen.Home.route,
+                                    selected = currentRoute == Screen.Preferences.route,
                                     onClick = {
                                         navController.navigate(Screen.Preferences.route)
                                         scope.launch { drawerState.close() }
@@ -106,7 +108,7 @@ class MainActivity : ComponentActivity() {
                                 )
                                 NavigationDrawerItem(
                                     label = { Text("Saved Meals") },
-                                    selected = currentRoute == Screen.Home.route,
+                                    selected = currentRoute == Screen.SavedMeals.route,
                                     onClick = {
                                         navController.navigate(Screen.SavedMeals.route)
                                         scope.launch { drawerState.close() }
