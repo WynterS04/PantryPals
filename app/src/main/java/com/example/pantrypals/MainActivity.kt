@@ -139,16 +139,16 @@ class MainActivity : ComponentActivity() {
                                 modifier = Modifier.padding(innerPadding)
                             ) {
                                 composable(Screen.Home.route) {
-                                    HomeScreen(modifier = Modifier.padding(innerPadding))
+                                    HomeScreen() // This now points to the function in HomeScreen.kt
                                 }
                                 composable(Screen.Profile.route) {
-                                    ProfileScreen()
+                                    ProfileScreen() // Points to ProfileScreen.kt
                                 }
                                 composable(Screen.Preferences.route) {
-                                    PreferencesScreen()
+                                    PreferencesScreen() // Points to PreferencesScreen.kt
                                 }
                                 composable(Screen.SavedMeals.route) {
-                                    SavedMealsScreen()
+                                    SavedMealsScreen() // Points to SavedMealsScreen.kt
                                 }
                             }
                         }
@@ -158,38 +158,30 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
 // NAVBAR ITEMS: Home, profile, preferences, saved meals
 
-sealed class Screen(val route: String) {
-    object Home : Screen("home")
-    object Profile : Screen("profile")
-    object Preferences : Screen("preferences")
-    object SavedMeals : Screen("saved_meals")
-}
-
-@Composable
-fun HomeScreen(modifier: Modifier) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text("Welcome to the Home Screen!", style = MaterialTheme.typography.headlineMedium)
-        // Add your main content here
-    }
-}
-
-@Composable
-fun ProfileScreen() {
-    Text("User Profile Information")
-}
-
-@Composable
-fun SavedMealsScreen() {
-    Text("Your Favorite Recipes")
-}
-
-@Composable
-fun PreferencesScreen() {
-    Text("Your preferences")
-}
+//@Composable
+//fun HomeScreen(modifier: Modifier) {
+//    Column(
+//        modifier = Modifier.fillMaxSize(),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Text("Welcome to the Home Screen!", style = MaterialTheme.typography.headlineMedium)
+//        // Add your main content here
+//    }
+//}
+//
+//@Composable
+//fun ProfileScreen() {
+//    Text("User Profile Information")
+//}
+//
+//@Composable
+//fun SavedMealsScreen() {
+//    Text("Your Favorite Recipes")
+//}
+//
+//@Composable
+//fun PreferencesScreen() {
+//    Text("Your preferences")
+//}
