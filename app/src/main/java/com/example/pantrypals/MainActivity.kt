@@ -31,10 +31,18 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.SelectInstance
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
@@ -45,11 +53,17 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 //import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
@@ -78,41 +92,84 @@ class MainActivity : ComponentActivity() {
                     ModalNavigationDrawer(
                         drawerState = drawerState,
                         drawerContent = {
-                            ModalDrawerSheet {
-                                Text("Menu", modifier = Modifier.padding(16.dp))
+                            ModalDrawerSheet (
+                                drawerContainerColor = Color(0xFFF7FDED)
+                            ){
+                                Row(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically // Aligns image and text perfectly
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.pantrypals),
+                                        contentDescription = "Logo",
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape) // Clips the image to a circle
+                                            .border(
+                                                width = 1.dp, // Adjust the border thickness
+                                                color = Color(0xFF31401C), // 2. Apply your deep forest green
+                                                shape = CircleShape // 3. Ensure the border is circular
+                                            ),
+                                    contentScale = ContentScale.Crop
+                                    )
+
+                                    Spacer(modifier = Modifier.width(12.dp)) // Adds a small gap between image and text
+
+                                    Text(
+                                        text = "Menu",
+                                        color = Color(0xFF31401C),
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                }
                                 HorizontalDivider()
 
                                 NavigationDrawerItem(
-                                    label = { Text("Home") },
+                                    label = { Text("Home",color = Color(0xFF31401C)) },
                                     selected = currentRoute == Screen.Home.route,
                                     onClick = {
                                         navController.navigate(Screen.Home.route)
                                         scope.launch { drawerState.close() }
-                                    }
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        unselectedTextColor = Color(0xFF31401C),
+                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
+                                    )
                                 )
                                 NavigationDrawerItem(
-                                    label = { Text("Profile") },
+                                    label = { Text("Profile",color = Color(0xFF31401C)) },
                                     selected = currentRoute == Screen.Profile.route,
                                     onClick = {
                                         navController.navigate(Screen.Profile.route)
                                         scope.launch { drawerState.close() }
-                                    }
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        unselectedTextColor = Color(0xFF31401C),
+                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
+                                    )
                                 )
                                 NavigationDrawerItem(
-                                    label = { Text("Preferences") },
+                                    label = { Text("Preferences",color = Color(0xFF31401C)) },
                                     selected = currentRoute == Screen.Preferences.route,
                                     onClick = {
                                         navController.navigate(Screen.Preferences.route)
                                         scope.launch { drawerState.close() }
-                                    }
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        unselectedTextColor = Color(0xFF31401C),
+                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
+                                    )
                                 )
                                 NavigationDrawerItem(
-                                    label = { Text("Saved Meals") },
+                                    label = { Text("Saved Meals",color = Color(0xFF31401C)) },
                                     selected = currentRoute == Screen.SavedMeals.route,
                                     onClick = {
                                         navController.navigate(Screen.SavedMeals.route)
                                         scope.launch { drawerState.close() }
-                                    }
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        unselectedTextColor = Color(0xFF31401C),
+                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
+                                    )
                                 )
                             }
                         }
@@ -121,12 +178,15 @@ class MainActivity : ComponentActivity() {
                         Scaffold(
                             topBar = {
                                 CenterAlignedTopAppBar(
-                                    title = { Text("PantryPals") },
+                                    title = { Text("PantryPals", color = Color(0xFFF7FDED)) },
+                                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                        containerColor = Color(0xFF7C8C3F)
+                                    ),
                                     navigationIcon = {
                                         IconButton(onClick = {
                                             scope.launch { drawerState.open() }
                                         }) {
-                                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color(0xFFF7FDED))
                                         }
                                     }
                                 )
