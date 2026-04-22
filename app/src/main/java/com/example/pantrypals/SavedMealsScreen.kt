@@ -1,5 +1,11 @@
 package com.example.pantrypals
 
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.pdf.PdfDocument
+import android.os.Environment
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -7,6 +13,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +25,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import java.io.File
+import java.io.FileOutputStream
 
 data class Meal(
     val id: Int,
@@ -27,9 +38,9 @@ data class Meal(
     val servings: String,  // e.g., "2 servings"
     val calories: String   // e.g., "450 kcal"
 )
-
 @Composable
 fun SavedMealsScreen() {
+    val context = LocalContext.current
     // WILL CHANGE THESE WHEN WE HAVE DYNAMIC DATA
     val savedMeals = remember {
         mutableStateListOf(
@@ -47,6 +58,11 @@ fun SavedMealsScreen() {
                 MealItem(
                     meal = meal,
                     onDelete = { savedMeals.remove(meal) },
+                    onExport = {
+                        println("Exporting ${meal.name} as PDF")
+                        val formatedRecipe = formatMeal(meal);
+                        exportToPdf(context, formatedRecipe)
+                    },
                     onClick = { selectedMeal = meal }
                 )
             }
@@ -70,55 +86,117 @@ fun SavedMealsScreen() {
 }
 
 
+//export logic
+fun exportToPdf(context: Context, text: String) {
+    //to find exported file on emulator: View, Tool Windows, Device Explorer, then follow the path given
+    // (normally storage, emulated, 0, android, data, com.example.pantrypals, files, download)
+    val pdfDocument = PdfDocument()
+    // Create a page info (A4 size: 595 x 842 points)
+    val pageInfo = PdfDocument.PageInfo.Builder(595, 842, 1).create()
+    val page = pdfDocument.startPage(pageInfo)
+
+    val canvas: Canvas = page.canvas
+    val paint = Paint()
+    paint.textSize = 12f
+
+    // Handle multi-line text
+    val x = 10f
+    var y = 25f
+    for (line in text.split("\n")) {
+        canvas.drawText(line, x, y, paint)
+        y += paint.descent() - paint.ascent()
+    }
+
+    pdfDocument.finishPage(page)
+
+    // Save the file to the Downloads folder
+    val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS), "GeminiRecipe.pdf")
+
+    try {
+        pdfDocument.writeTo(FileOutputStream(file))
+        Toast.makeText(context, "PDF Saved to: ${file.absolutePath}", Toast.LENGTH_LONG).show()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        Toast.makeText(context, "Error saving PDF", Toast.LENGTH_SHORT).show()
+    }
+
+    pdfDocument.close()
+}
+
+
+//meal format logic
+//have to change this when we get meals from gemini, rather than hardcoded
+fun formatMeal(meal:Meal): String{
+    val formatedRecipe = meal.name +"\n"+meal.servings+"\n"+meal.time+"\n"+meal.calories+"\n"+meal.recipe;
+
+    return formatedRecipe;
+}
+
 //HAVE TO ADD THE USERS SAVED RECIPES
 
 @Composable
-fun MealItem(meal: Meal, onDelete: () -> Unit, onClick: () -> Unit) {
+fun MealItem(
+    meal: Meal,
+    onDelete: () -> Unit,
+    onExport: () -> Unit, // New action
+    onClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 4.dp)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(containerColor = Color(0xFF0097B2)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.padding(16.dp).fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Main Content Column
             Column(modifier = Modifier.weight(1f)) {
+                Text(text = meal.name, color = Color.White, style = MaterialTheme.typography.titleMedium)
                 Text(
-                    text = meal.name,
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleMedium
+                    text = "${meal.time}  •  ${meal.servings}  •  ${meal.calories}",
+                    color = Color.White.copy(alpha = 0.8f),
+                    style = MaterialTheme.typography.bodySmall
                 )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // Detail Row (Time, Servings, Calories)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "${meal.time}  •  ${meal.servings}  •  ${meal.calories}",
-                        color = Color.White.copy(alpha = 0.8f), // Slightly faded for hierarchy
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
             }
 
-            // Delete Button
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.size(24.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = Color.White
-                )
+            // The Three Dots Menu
+            Box {
+                IconButton(onClick = { expanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Options",
+                        tint = Color.White
+                    )
+                }
+
+                // The Popup Menu
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    containerColor = Color(0xFFF7FDED) // Using your light creamy background
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Export PDF", color = Color(0xFF31401C)) },
+                        leadingIcon = { Icon(Icons.Default.Share, contentDescription = null, tint = Color(0xFF31401C)) },
+                        onClick = {
+                            expanded = false
+                            onExport()
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Delete Saved Meal", color = Color.Red) },
+                        leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red) },
+                        onClick = {
+                            expanded = false
+                            onDelete()
+                        }
+                    )
+                }
             }
         }
     }
