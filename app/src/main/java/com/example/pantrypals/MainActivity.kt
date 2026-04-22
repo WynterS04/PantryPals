@@ -136,18 +136,6 @@ class MainActivity : ComponentActivity() {
                                     )
                                 )
                                 NavigationDrawerItem(
-                                    label = { Text("Profile",color = Color(0xFF31401C)) },
-                                    selected = currentRoute == Screen.Profile.route,
-                                    onClick = {
-                                        navController.navigate(Screen.Profile.route)
-                                        scope.launch { drawerState.close() }
-                                    },
-                                    colors = NavigationDrawerItemDefaults.colors(
-                                        unselectedTextColor = Color(0xFF31401C),
-                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
-                                    )
-                                )
-                                NavigationDrawerItem(
                                     label = { Text("Preferences",color = Color(0xFF31401C)) },
                                     selected = currentRoute == Screen.Preferences.route,
                                     onClick = {
@@ -201,9 +189,6 @@ class MainActivity : ComponentActivity() {
                                 composable(Screen.Home.route) {
                                     HomeScreen() // This now points to the function in HomeScreen.kt
                                 }
-                                composable(Screen.Profile.route) {
-                                    ProfileScreen() // Points to ProfileScreen.kt
-                                }
                                 composable(Screen.Preferences.route) {
                                     PreferencesScreen() // Points to PreferencesScreen.kt
                                 }
@@ -218,7 +203,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-// NAVBAR ITEMS: Home, profile, preferences, saved meals
+// NAVBAR ITEMS: Home, preferences, saved meals
 
 //@Composable
 //fun HomeScreen(modifier: Modifier) {
@@ -229,11 +214,6 @@ class MainActivity : ComponentActivity() {
 //        Text("Welcome to the Home Screen!", style = MaterialTheme.typography.headlineMedium)
 //        // Add your main content here
 //    }
-//}
-//
-//@Composable
-//fun ProfileScreen() {
-//    Text("User Profile Information")
 //}
 //
 //@Composable
