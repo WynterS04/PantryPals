@@ -215,12 +215,9 @@ class MainActivity : ComponentActivity() {
 
                                     val generativeModel = GenerativeModel(
                                         modelName = "gemini-3.1-flash-lite-preview",
-<<<<<<< HEAD
-                                        apiKey = "INSERT_API_KEY"
-=======
-                                        apiKey = "insert here"
->>>>>>> 2959de7 (combined code for exporting recipe)
+                                        apiKey = "insert_here"
                                     )
+
 
                                     PreferencesScreen(
                                         viewModel = prefsVM,
@@ -231,12 +228,43 @@ class MainActivity : ComponentActivity() {
 
                                                 try {
                                                     val prompt = """
-                                                    Make me a recipe with ${prefs.selectedProteins.joinToString()}.
-                                                    Avoid: ${prefs.dislikes}.
-                                                    Include: ${prefs.favoriteIngredients}.
-                                                    Dietary restrictions: ${prefs.dietaryRestrictions}.
-                                                    Protein goal: ${prefs.protein}
+                                                    You are a recipe generator. You MUST follow this exact format and do not deviate.
+                                                    
+                                                    Return ONLY in this structure:
+                                                    
+                                                    Title: <recipe name>
+                                                    
+                                                    Details:
+                                                    Prep Time: 
+                                                    Cook Time: 
+                                                    Servings: 
+                                                    
+                                                    Ingredients:
+                                   
+                                                    
+                                                    Instructions:
+                                                    
+                                                    
+                                                    Nutritional Profile:
+                                                    Protein: 
+                                                    Calories: 
+                                                    Carbs: 
+                                                    
+                                                    Rules:
+                                                    - Give full bulleted list of Ingredients, each ingredient on a separate line
+                                                    - Give full numbered list of Instructions, each insturction on it's own line 
+                                                    - Do NOT explain anything
+                                                    - Do NOT use markdown or symbols like ** or ###
+                                                    - Keep each section exactly as labeled above
+                                                    - Ensure instructions are numbered
+                                                    
+                                                    Create a recipe using:
+                                                    Proteins: ${prefs.selectedProteins.joinToString()}
+                                                    Avoid: ${prefs.dislikes}
+                                                    Include: ${prefs.favoriteIngredients}
+                                                    Dietary restrictions: ${prefs.dietaryRestrictions}
                                                     Calories goal: ${prefs.calories}
+                                                    Protein goal: ${prefs.protein}
                                                     Carbs goal: ${prefs.carbs}
                                                     """.trimIndent()
 
@@ -268,7 +296,7 @@ class MainActivity : ComponentActivity() {
                                         isSaved = isSaved,
                                         onSave = {
                                             mealsVM.addMeal(responseText)
-                                            isSaved = true
+                                            isSaved = !isSaved
                                         }
                                     )
                                 }

@@ -29,6 +29,14 @@ import com.example.pantrypals.util.PdfExporter
 fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
 
     val context = LocalContext.current
+    val title = recipeText
+        .substringAfter("Title:")
+        .substringBefore("\n")
+        .trim()
+        .ifEmpty { "Recipe" }
+    val body = recipeText
+        .substringAfter("\n") // removes first line (Title line)
+        .trim()
 
     LazyColumn(
         modifier = Modifier
@@ -37,7 +45,7 @@ fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
     ) {
         item {
             Text(
-                "Recipe",
+                text = title,
                 style = MaterialTheme.typography.titleLarge,
                 color = Color(0xFFD16B2F),
                 modifier = Modifier.padding(12.dp)
@@ -46,7 +54,7 @@ fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier.padding(10.dp)
             ) {
                 IconButton(onClick = onSave) {
                     Icon(
@@ -68,8 +76,7 @@ fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
             }
             }
         item {
-
-            Text(recipeText)
+            Text(body)
         }
     }
 }
