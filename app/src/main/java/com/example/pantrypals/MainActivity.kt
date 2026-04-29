@@ -256,7 +256,7 @@ class MainActivity : ComponentActivity() {
                                     HomeScreen() // This now points to the function in HomeScreen.kt
                                 }
                                 composable(Screen.SavedMeals.route) {
-                                    SavedMealsScreen() // Points to SavedMealsScreen.kt
+                                    SavedMealsScreen(viewModel = mealsVM)
                                 }
                                 composable("mealDetail") {
                                     MealDetailScreen(
