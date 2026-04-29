@@ -56,6 +56,7 @@ fun PreferencesScreen(
                 TextField(
                     value = prefs.protein,
                     onValueChange = { viewModel.updateProtein(it) },
+                    label = { Text("gram value") },
                     enabled = prefs.useProteinGoal,
                     modifier = Modifier.width(120.dp)
                 )
@@ -75,6 +76,7 @@ fun PreferencesScreen(
                 TextField(
                     value = prefs.calories,
                     onValueChange = { viewModel.updateCalories(it) },
+                    label = { Text("kcal value") },
                     enabled = prefs.useCaloriesGoal
                 )
             }
@@ -93,6 +95,7 @@ fun PreferencesScreen(
                 TextField(
                     value = prefs.carbs,
                     onValueChange = { viewModel.updateCarbs(it) },
+                    label = { Text("gram value") },
                     enabled = prefs.useCarbsGoal
                 )
             }

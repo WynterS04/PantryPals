@@ -215,7 +215,7 @@ class MainActivity : ComponentActivity() {
 
                                     val generativeModel = GenerativeModel(
                                         modelName = "gemini-3.1-flash-lite-preview",
-                                        apiKey = "Insert_Here"
+                                        apiKey = "AIzaSyBV_AVyZ0AHnpopBvCQ8RL2kC-s1VZUU3E"
                                     )
 
                                     PreferencesScreen(
