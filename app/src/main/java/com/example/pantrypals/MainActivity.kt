@@ -234,6 +234,11 @@ class MainActivity : ComponentActivity() {
                                                     Protein goal: ${prefs.protein}
                                                     Calories goal: ${prefs.calories}
                                                     Carbs goal: ${prefs.carbs}
+                                                    
+                                                    IMPORTANT: Start your response with ONLY the name of the dish on the very first line. 
+                                                        Do not include introductory sentences like "Here is a recipe" or "Since you have a goal."
+                                                        Follow the name with the ingredients and instructions.
+                                                    ""${'"'}.trimIndent()
                                                     """.trimIndent()
 
                                                     val response = generativeModel.generateContent(prompt)

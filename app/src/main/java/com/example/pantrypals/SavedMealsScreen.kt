@@ -11,6 +11,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
@@ -78,7 +80,18 @@ fun SavedMealsScreen(viewModel: MealsViewModel) {
                 // Use the first line as title
                 title = { Text(meal.text.substringBefore("\n"), color = Color(0xFF31401C)) },
                 // Use the rest as recipe text
-                text = { Text(meal.text.substringAfter("\n")) },
+                text = {
+                    Column(
+                        modifier = Modifier
+                            .verticalScroll(rememberScrollState())
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            meal.text.substringAfter("\n")
+                            )
+
+                        }
+                       },
                 confirmButton = {
                     TextButton(onClick = { selectedMeal = null }) {
                         Text("Close", color = Color(0xFF7C8C3F))
