@@ -215,7 +215,11 @@ class MainActivity : ComponentActivity() {
 
                                     val generativeModel = GenerativeModel(
                                         modelName = "gemini-3.1-flash-lite-preview",
+<<<<<<< HEAD
                                         apiKey = "INSERT_API_KEY"
+=======
+                                        apiKey = "insert here"
+>>>>>>> 2959de7 (combined code for exporting recipe)
                                     )
 
                                     PreferencesScreen(

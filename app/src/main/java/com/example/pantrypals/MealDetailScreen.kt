@@ -14,25 +14,39 @@ import androidx.compose.ui.unit.dp
 //icon imports
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pantrypals.util.PdfExporter
 
 @Composable
 fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
+
+    val context = LocalContext.current
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         item {
+            Text(
+                "Recipe",
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFFD16B2F),
+                modifier = Modifier.padding(12.dp)
+            )
+        }
+        item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(30.dp)
+                modifier = Modifier.padding(8.dp)
             ) {
                 IconButton(onClick = onSave) {
                     Icon(
@@ -41,16 +55,20 @@ fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
                         tint = if (isSaved) Color.Red else Color.Gray
                     )
                 }
-                Text(text = "Save this recipe")
+                IconButton(
+                    onClick = {
+                        PdfExporter.sharePdf(context, recipeText)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Upload,
+                        contentDescription = "Export"
+                    )
+                }
             }
             }
         item {
-            Text(
-                "Recipe",
-                style = MaterialTheme.typography.titleLarge,
-                color = Color(0xFFD16B2F),
-                modifier = Modifier.padding(12.dp)
-            )
+
             Text(recipeText)
         }
     }
