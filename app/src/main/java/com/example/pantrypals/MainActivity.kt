@@ -79,6 +79,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.pantrypals.viewmodel.MealsViewModel
 import com.example.pantrypals.viewmodel.PreferencesViewModel
 
 
@@ -103,6 +104,11 @@ class MainActivity : ComponentActivity() {
                     //prompt
                     var responseText by remember { mutableStateOf("") }
                     var isLoading by remember { mutableStateOf(false) }
+
+                    //meal viewmodel
+                    val mealsVM: MealsViewModel = viewModel()
+                    var isSaved by remember {mutableStateOf(false)}
+
 
                     ModalNavigationDrawer(
                         drawerState = drawerState,
@@ -209,7 +215,7 @@ class MainActivity : ComponentActivity() {
 
                                     val generativeModel = GenerativeModel(
                                         modelName = "gemini-3.1-flash-lite-preview",
-                                        apiKey = "AIzaSyCmhtIopGzcq1Nf3rqyPTo1ofdp1QDNuCE"
+                                        apiKey = "Insert_Here"
                                     )
 
                                     PreferencesScreen(
@@ -253,7 +259,14 @@ class MainActivity : ComponentActivity() {
                                     SavedMealsScreen() // Points to SavedMealsScreen.kt
                                 }
                                 composable("mealDetail") {
-                                    MealDetailScreen(responseText)
+                                    MealDetailScreen(
+                                        recipeText = responseText,
+                                        isSaved = isSaved,
+                                        onSave = {
+                                            mealsVM.addMeal(responseText)
+                                            isSaved = true
+                                        }
+                                    )
                                 }
                             }
                         }

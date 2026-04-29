@@ -1,6 +1,7 @@
 package com.example.pantrypals
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,14 +11,39 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+//icon imports
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.Alignment
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun MealDetailScreen(recipeText: String) {
+fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(30.dp)
+            ) {
+                IconButton(onClick = onSave) {
+                    Icon(
+                        imageVector = if (isSaved) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Save",
+                        tint = if (isSaved) Color.Red else Color.Gray
+                    )
+                }
+                Text(text = "Save this recipe")
+            }
+            }
         item {
             Text(
                 "Recipe",

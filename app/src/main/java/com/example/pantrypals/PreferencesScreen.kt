@@ -1,5 +1,6 @@
 package com.example.pantrypals
 
+import android.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,7 +28,7 @@ fun PreferencesScreen(
         modifier = modifier
             .fillMaxSize()
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
 
         item {
@@ -150,7 +151,9 @@ fun PreferencesScreen(
         item {
             Button(
                 onClick = { onGenerate(prefs) },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
             ) {
                 Text(
                     "Generate Recipe",
