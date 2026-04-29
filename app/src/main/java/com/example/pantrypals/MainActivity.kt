@@ -34,276 +34,199 @@ import androidx.compose.ui.unit.dp
 import com.google.ai.client.generativeai.GenerativeModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.SelectInstance
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.ui.graphics.Color
-//icon imports
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.lifecycle.viewmodel.compose.viewModel
-//navigation imports
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+//import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.pantrypals.data.Meal
-import com.example.pantrypals.viewmodel.MealsViewModel
-import androidx.compose.foundation.lazy.items
+import kotlinx.coroutines.launch
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 
+
+
+//fix highlights
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-                AppNavigation()
-        }
-    }
-}
+            PantryPalsTheme() {
+                    val navController = rememberNavController()
+                    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                    val scope = rememberCoroutineScope()
+                    val navBackStackEntry by navController.currentBackStackEntryAsState()
+                    val currentRoute = navBackStackEntry?.destination?.route
 
+                    ModalNavigationDrawer(
+                        drawerState = drawerState,
+                        drawerContent = {
+                            ModalDrawerSheet (
+                                drawerContainerColor = Color(0xFFF7FDED)
+                            ){
+                                Row(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically // Aligns image and text perfectly
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.pantrypals),
+                                        contentDescription = "Logo",
+                                        modifier = Modifier
+                                            .size(40.dp)
+                                            .clip(CircleShape) // Clips the image to a circle
+                                            .border(
+                                                width = 1.dp, // Adjust the border thickness
+                                                color = Color(0xFF31401C), // 2. Apply your deep forest green
+                                                shape = CircleShape // 3. Ensure the border is circular
+                                            ),
+                                    contentScale = ContentScale.Crop
+                                    )
 
-@Composable
-fun AppNavigation() {
-    //prompt
-    var responseText by remember { mutableStateOf("Ready to ask Gemini") }
-    var isLoading by remember { mutableStateOf(false) }
-    var meal: String? = ""
+                                    Spacer(modifier = Modifier.width(12.dp)) // Adds a small gap between image and text
 
+                                    Text(
+                                        text = "Menu",
+                                        color = Color(0xFF31401C),
+                                        style = MaterialTheme.typography.titleLarge
+                                    )
+                                }
+                                HorizontalDivider()
 
-    //saved meals
-    var saveMessage by remember { mutableStateOf("") }
-    var isSaved by remember {mutableStateOf(false)}
-
-    val viewModel: MealsViewModel = viewModel()
-    val navController = rememberNavController()
-    val coroutineScope = rememberCoroutineScope()
-    val generativeModel = remember{
-        GenerativeModel(
-            //model we want to use
-            modelName = "gemini-3.1-flash-lite-preview",
-            //api key
-            apiKey = "Insert here"
-        )
-    }
-    NavHost(navController = navController, startDestination = "prompt") {
-        composable("prompt") {
-            PromptScreen(
-                onGenerate = {
-                    coroutineScope.launch {
-                        isLoading = true
-                        responseText = "Thinking..."
-
-
-                        try{
-                            val prompt = "Make me a recipe with chicken, that does not include nuts but includes lettuce"
-                            val response = generativeModel.generateContent(prompt)
-                            meal = response.text
-
-
-                            responseText = response.text ?: "No response generated."
-
-
-                        } catch (e: Exception){
-                            responseText = "Error: ${e.localizedMessage}"
-                        } finally {
-                            isLoading = false
+                                NavigationDrawerItem(
+                                    label = { Text("Home",color = Color(0xFF31401C)) },
+                                    selected = currentRoute == Screen.Home.route,
+                                    onClick = {
+                                        navController.navigate(Screen.Home.route)
+                                        scope.launch { drawerState.close() }
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        unselectedTextColor = Color(0xFF31401C),
+                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
+                                    )
+                                )
+                                NavigationDrawerItem(
+                                    label = { Text("Preferences",color = Color(0xFF31401C)) },
+                                    selected = currentRoute == Screen.Preferences.route,
+                                    onClick = {
+                                        navController.navigate(Screen.Preferences.route)
+                                        scope.launch { drawerState.close() }
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        unselectedTextColor = Color(0xFF31401C),
+                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
+                                    )
+                                )
+                                NavigationDrawerItem(
+                                    label = { Text("Saved Meals",color = Color(0xFF31401C)) },
+                                    selected = currentRoute == Screen.SavedMeals.route,
+                                    onClick = {
+                                        navController.navigate(Screen.SavedMeals.route)
+                                        scope.launch { drawerState.close() }
+                                    },
+                                    colors = NavigationDrawerItemDefaults.colors(
+                                        unselectedTextColor = Color(0xFF31401C),
+                                        selectedTextColor = Color(0xFFF7FDED) // Maybe white when highlighted?
+                                    )
+                                )
+                            }
+                        }
+                    ) {
+                        // This is the main screen content
+                        Scaffold(
+                            topBar = {
+                                CenterAlignedTopAppBar(
+                                    title = { Text("PantryPals", color = Color(0xFFF7FDED)) },
+                                    colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                                        containerColor = Color(0xFF7C8C3F)
+                                    ),
+                                    navigationIcon = {
+                                        IconButton(onClick = {
+                                            scope.launch { drawerState.open() }
+                                        }) {
+                                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color(0xFFF7FDED))
+                                        }
+                                    }
+                                )
+                            }
+                        ) { innerPadding ->
+                            // The actual NavHost that switches your fragments/screens
+                            NavHost(
+                                navController = navController,
+                                startDestination = Screen.Home.route,
+                                modifier = Modifier.padding(innerPadding)
+                            ) {
+                                composable(Screen.Home.route) {
+                                    HomeScreen() // This now points to the function in HomeScreen.kt
+                                }
+                                composable(Screen.Preferences.route) {
+                                    PreferencesScreen() // Points to PreferencesScreen.kt
+                                }
+                                composable(Screen.SavedMeals.route) {
+                                    SavedMealsScreen() // Points to SavedMealsScreen.kt
+                                }
+                            }
                         }
                     }
-                    navController.navigate("recipe")
                 }
-            )
-        }
-
-
-        composable("recipe") {
-            RecipeScreen(
-                responseText = responseText,
-                isSaved = isSaved,
-                onSave = {
-                    viewModel.addMeal(meal)
-                    navController.navigate("confirm")
-                }
-            )
-        }
-
-
-        composable("confirm") {
-            ConfirmMealSaved(
-                saveMessage = "Meal Saved!",
-                onClick = {
-                    navController.navigate("saved_meals")
-                }
-            )
-        }
-
-
-        composable("saved_meals") {
-            SavedMealsScreen(meals = viewModel.meals)
-        }
-    }
-}
-
-
-@Composable
-fun PromptScreen(onGenerate: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(.5f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            Button(onClick = onGenerate) {
-                Text("Generate Recipe")
             }
         }
     }
-}
 
+// NAVBAR ITEMS: Home, preferences, saved meals
 
-@Composable
-fun RecipeScreen(responseText : String, isSaved: Boolean, onSave: () -> Unit) {
-
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        item {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(30.dp)
-            ) {
-                IconButton(onClick = onSave) {
-                    Icon(
-                        imageVector = if (isSaved) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Save",
-                        tint = if (isSaved) Color.Red else Color.Gray
-                    )
-                }
-                Text(text = "Save this recipe")
-            }
-        }
-        item {
-            Text(
-                text = responseText,
-                style = MaterialTheme.typography.bodyLarge
-            )
-        }
-    }
-}
-
-
-@Composable
-fun ConfirmMealSaved(saveMessage: String, onClick: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .weight(.5f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ){
-            if (saveMessage.isNotEmpty()) {
-                Text(text = saveMessage)
-            }
-        }
-        Box(
-            modifier = Modifier
-                .weight(.5f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ){
-            Button(onClick = onClick) {
-                Text("Saved Meals")
-            }
-        }
-    }
-}
-
-
-@Composable
-fun SavedMealsScreen(meals: List<Meal>) {
-    LazyColumn (modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)
-    ) {
-        items(meals) { meal ->
-            Text(meal.text)
-        }
-    }
-}
-
-@Composable
-fun MealList(
-    mealList: List<Meal>,
-    onFavoriteClick: (Meal) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier = modifier) {
-        items(items = mealList, key = { it.id }) { meal ->
-            MealItem(
-                meal = meal,
-                onFavoriteClick = onFavoriteClick
-            )
-        }
-    }
-}
-
-@Composable
-fun MealItem(
-    meal: Meal,
-    onFavoriteClick: (Meal) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .padding(8.dp)
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(30.dp)
-            ) {
-                Text(
-                    text = "Title",
-                    style = MaterialTheme.typography.titleLarge
-                )
-            }
-
-            IconButton(onClick = { onFavoriteClick(meal) }) {
-                Icon(
-                    imageVector = if (meal.isFavorite) {
-                        Icons.Filled.Favorite
-                    } else {
-                        Icons.Outlined.FavoriteBorder
-                    },
-                    contentDescription = "Favorite",
-                    tint = if (meal.isFavorite) Color.Red else Color.Gray
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun HomeScreen(modifier: Modifier) {
+//    Column(
+//        modifier = Modifier.fillMaxSize(),
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Text("Welcome to the Home Screen!", style = MaterialTheme.typography.headlineMedium)
+//        // Add your main content here
+//    }
+//}
+//
+//@Composable
+//fun SavedMealsScreen() {
+//    Text("Your Favorite Recipes")
+//}
+//
+//@Composable
+//fun PreferencesScreen() {
+//    Text("Your preferences")
+//}
