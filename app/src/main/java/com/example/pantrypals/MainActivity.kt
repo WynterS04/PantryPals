@@ -51,10 +51,12 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerValue
+import com.example.pantrypals.ui.theme.PantryPalsTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
@@ -70,13 +72,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 //import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-
+import com.example.pantrypals.viewmodel.PreferencesViewModel
 
 
 //fix highlights
@@ -93,6 +96,13 @@ class MainActivity : ComponentActivity() {
                     val scope = rememberCoroutineScope()
                     val navBackStackEntry by navController.currentBackStackEntryAsState()
                     val currentRoute = navBackStackEntry?.destination?.route
+
+                    //user prev preferences
+                    val prefsVM: PreferencesViewModel = viewModel()
+
+                    //prompt
+                    var responseText by remember { mutableStateOf("") }
+                    var isLoading by remember { mutableStateOf(false) }
 
                     ModalNavigationDrawer(
                         drawerState = drawerState,
@@ -191,14 +201,59 @@ class MainActivity : ComponentActivity() {
                                 startDestination = Screen.Home.route,
                                 modifier = Modifier.padding(innerPadding)
                             ) {
+                                composable(Screen.Preferences.route) {
+
+                                    val coroutineScope = rememberCoroutineScope()
+
+
+
+                                    val generativeModel = GenerativeModel(
+                                        modelName = "gemini-3.1-flash-lite-preview",
+                                        apiKey = "AIzaSyCmhtIopGzcq1Nf3rqyPTo1ofdp1QDNuCE"
+                                    )
+
+                                    PreferencesScreen(
+                                        viewModel = prefsVM,
+                                        onGenerate = { prefs ->
+
+                                            coroutineScope.launch {
+                                                isLoading = true
+
+                                                try {
+                                                    val prompt = """
+                                                    Make me a recipe with ${prefs.selectedProteins.joinToString()}.
+                                                    Avoid: ${prefs.dislikes}.
+                                                    Include: ${prefs.favoriteIngredients}.
+                                                    Dietary restrictions: ${prefs.dietaryRestrictions}.
+                                                    Protein goal: ${prefs.protein}
+                                                    Calories goal: ${prefs.calories}
+                                                    Carbs goal: ${prefs.carbs}
+                                                    """.trimIndent()
+
+                                                    val response = generativeModel.generateContent(prompt)
+
+                                                    responseText = response.text ?: "No response"
+
+                                                    //navigate to recipe screen
+                                                    navController.navigate("mealDetail") // or Recipe screen
+
+                                                } catch (e: Exception) {
+                                                    responseText = "Error: ${e.message}"
+                                                }
+
+                                                isLoading = false
+                                            }
+                                        }
+                                    )
+                                }
                                 composable(Screen.Home.route) {
                                     HomeScreen() // This now points to the function in HomeScreen.kt
                                 }
-                                composable(Screen.Preferences.route) {
-                                    PreferencesScreen() // Points to PreferencesScreen.kt
-                                }
                                 composable(Screen.SavedMeals.route) {
                                     SavedMealsScreen() // Points to SavedMealsScreen.kt
+                                }
+                                composable("mealDetail") {
+                                    MealDetailScreen(responseText)
                                 }
                             }
                         }
