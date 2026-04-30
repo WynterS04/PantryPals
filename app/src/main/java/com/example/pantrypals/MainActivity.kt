@@ -54,7 +54,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.pantrypals.screens.HomeScreen
 import com.example.pantrypals.screens.MealDetailScreen
 import com.example.pantrypals.screens.PreferencesScreen
-import com.example.pantrypals.screens.SavedMealsScreen
+import com.example.pantrypals.SavedMealsScreen
 import com.example.pantrypals.viewmodel.MealsViewModel
 import com.example.pantrypals.viewmodel.PreferencesViewModel
 
@@ -265,7 +265,7 @@ class MainActivity : ComponentActivity() {
                                     HomeScreen(navController) // This now points to the function in HomeScreen.kt
                                 }
                                 composable(Screen.SavedMeals.route) {
-                                    SavedMealsScreen() // Points to SavedMealsScreen.kt
+                                    SavedMealsScreen(mealsVM) // Points to SavedMealsScreen.kt
                                 }
                                 composable("mealDetail") {
                                     MealDetailScreen(
@@ -284,26 +284,3 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-// NAVBAR ITEMS: Home, preferences, saved meals
-
-//@Composable
-//fun HomeScreen(modifier: Modifier) {
-//    Column(
-//        modifier = Modifier.fillMaxSize(),
-//        horizontalAlignment = Alignment.CenterHorizontally
-//    ) {
-//        Text("Welcome to the Home Screen!", style = MaterialTheme.typography.headlineMedium)
-//        // Add your main content here
-//    }
-//}
-//
-//@Composable
-//fun SavedMealsScreen() {
-//    Text("Your Favorite Recipes")
-//}
-//
-//@Composable
-//fun PreferencesScreen() {
-//    Text("Your preferences")
-//}
