@@ -1,4 +1,4 @@
-package com.example.pantrypals
+package com.example.pantrypals.screens
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.example.pantrypals.Screen
 
 @Composable
 fun HomeScreen(navController: NavController) {
