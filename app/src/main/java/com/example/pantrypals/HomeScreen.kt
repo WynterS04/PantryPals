@@ -1,5 +1,6 @@
 package com.example.pantrypals
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -24,13 +25,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 
 @Composable
 fun HomeScreen(navController: NavController) {
     val primaryBlue = Color(0xFF009BB5)
-    var showDialog by remember { mutableStateOf(true) }
-    var name by rememberSaveable { mutableStateOf("") }
+    val context = LocalContext.current
+    val prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    var name by rememberSaveable {
+        mutableStateOf(prefs.getString("user_name", "") ?: "")
+    }
+    var showDialog by remember {
+        mutableStateOf(name.isBlank())
+    }
 
     if (showDialog) {
         AlertDialog(
@@ -51,6 +59,8 @@ fun HomeScreen(navController: NavController) {
                 Button(
                     onClick = {
                         if (name.isNotBlank()) {
+                            prefs.edit().putString("user_name", name).apply()
+
                             showDialog = false
                         }
                     }
