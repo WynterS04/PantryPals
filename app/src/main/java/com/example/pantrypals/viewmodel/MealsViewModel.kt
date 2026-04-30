@@ -6,28 +6,19 @@ import com.example.pantrypals.data.Meal
 
 class MealsViewModel : ViewModel() {
 
-    private var nextId = 0
+    val meals = mutableStateListOf<Meal>()
 
-    var meals = mutableStateListOf<Meal>()
-        private set
+    fun toggleMeal(meal: Meal) {
+        val exists = meals.any { it.text == meal.text }
 
-    fun addMeal(text: String?) {
-        if (text == null) return
-
-        meals.add(
-            Meal(
-                id = nextId++,
-                text = text
-            )
-        )
+        if (exists) {
+            meals.removeAll { it.text == meal.text }
+        } else {
+            meals.add(meal)
+        }
     }
 
-    fun toggleFavorite(meal: Meal) {
-        val index = meals.indexOf(meal)
-        if (index != -1) {
-            meals[index] = meals[index].copy(
-                isFavorite = !meal.isFavorite
-            )
-        }
+    fun isMealSaved(recipeText: String): Boolean {
+        return meals.any { it.text == recipeText }
     }
 }

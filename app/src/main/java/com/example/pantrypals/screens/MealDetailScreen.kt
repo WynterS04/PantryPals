@@ -1,5 +1,6 @@
 package com.example.pantrypals.screens
 
+import com.example.pantrypals.viewmodel.MealsViewModel
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,12 +20,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
+import com.example.pantrypals.data.Meal
 import com.example.pantrypals.util.PdfExporter
 
 @Composable
-fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
+fun MealDetailScreen(recipeText: String, viewModel: MealsViewModel) {
 
     val context = LocalContext.current
+
+    val isSaved = viewModel.isMealSaved(recipeText)
+    val meal = Meal(text = recipeText)
+
     val title = recipeText
         .substringAfter("Title:")
         .substringBefore("\n")
@@ -52,9 +58,14 @@ fun MealDetailScreen(recipeText: String, isSaved: Boolean, onSave: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(10.dp)
             ) {
-                IconButton(onClick = onSave) {
+                IconButton(onClick = {
+                    viewModel.toggleMeal(meal)
+                }) {
                     Icon(
-                        imageVector = if (isSaved) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        imageVector = if (isSaved)
+                            Icons.Filled.Favorite
+                        else
+                            Icons.Outlined.FavoriteBorder,
                         contentDescription = "Save",
                         tint = if (isSaved) Color.Red else Color.Gray
                     )

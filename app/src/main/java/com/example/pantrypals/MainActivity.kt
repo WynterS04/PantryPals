@@ -191,7 +191,7 @@ class MainActivity : ComponentActivity() {
 
                                     val generativeModel = GenerativeModel(
                                         modelName = "gemini-3.1-flash-lite-preview",
-                                        apiKey = "insert_here"
+                                        apiKey = "inserrt_here"
                                     )
 
 
@@ -270,11 +270,7 @@ class MainActivity : ComponentActivity() {
                                 composable("mealDetail") {
                                     MealDetailScreen(
                                         recipeText = responseText,
-                                        isSaved = isSaved,
-                                        onSave = {
-                                            mealsVM.addMeal(responseText)
-                                            isSaved = !isSaved
-                                        }
+                                        mealsVM
                                     )
                                 }
                             }
